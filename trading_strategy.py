@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import pandas as pd
+import sys
 import numpy as np
 
 
@@ -164,10 +165,16 @@ class TradingStrategy:
         }
 
 
-def main():
+def main(data_file=None):
     """主函数：加载数据、运行回测、输出结果"""
-    # 读取1分钟K线数据
-    df = pd.read_csv('data/分钟级数据/1分钟数据/TQQQ历史数据.csv')
+    # 默认使用1分钟数据，可通过命令行参数指定
+    if data_file is None:
+        if len(sys.argv) > 1:
+            data_file = sys.argv[1]
+        else:
+            data_file = 'data/分钟级数据/1分钟数据/TQQQ历史数据.csv'
+    
+    df = pd.read_csv(data_file)
     
     # 运行回测
     strategy = TradingStrategy()
@@ -175,7 +182,7 @@ def main():
     
     # 打印回测结果
     print("=" * 60)
-    print("TQQQ 1分钟 边界交易策略 回测结果")
+    print(f"边界交易策略 回测结果 ({data_file})")
     print("=" * 60)
     print(f"初始资金: ${Config.INITIAL_CAPITAL:,.2f}")
     print(f"最终资金: ${result['final_value']:,.2f}")
@@ -192,6 +199,16 @@ def main():
     results_df = pd.DataFrame(result['results'])
     results_df.to_csv('backtest_results.csv', index=False)
     print("\n详细结果已保存到 backtest_results.csv")
+
+    # 保存回测结果摘要
+    with open("backtest_summary.txt", "w", encoding="utf-8") as f:
+        f.write("TQQQ 5分钟 边界交易策略 回测结果摘要\n")
+        f.write("=" * 40 + "\n")
+        f.write(f"初始资金: {Config.INITIAL_CAPITAL:,.2f}\n")
+        f.write(f"最终资金: {result["final_value"]:,.2f}\n")
+        f.write(f"总收益率: {result["total_return"]:.2f}%\n")
+        f.write(f"总交易次数: {len(result["trade_log"])}\n")
+    print("回测摘要已保存到 backtest_summary.txt")
 
 
 if __name__ == '__main__':

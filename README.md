@@ -79,4 +79,3 @@ python trading_strategy.py
 
 - 1分钟K线数据: `data/分钟级数据/1分钟数据/TQQQ历史数据.csv`
 - 回测结果: `backtest_results.csv`
->>>>>>> 2ae9aa9 (first commit)
